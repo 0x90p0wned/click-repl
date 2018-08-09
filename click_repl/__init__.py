@@ -110,12 +110,13 @@ class ClickCompleter(Completer):
         for param in ctx.command.params:
             if isinstance(param, click.Option):
                 for options in (param.opts, param.secondary_opts):
-                    for o in options:
-                        choices.append(
-                            Completion(
-                                text_type(o), -len(incomplete), display_meta=param.help
+                    if not any(x in options for x in args) or param.multiple:
+                        for o in options:
+                            choices.append(
+                                Completion(
+                                    text_type(o), -len(incomplete), display_meta=param.help
+                                )
                             )
-                        )
             elif isinstance(param, click.Argument):
                 if isinstance(param.type, click.Choice):
                     for choice in param.type.choices:
